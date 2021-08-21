@@ -67,6 +67,20 @@ send_message <- function(p1, p2, game_id){
   return(send)
 }
 
+#' Updates the current Series spreadsheet with the results / links of recently
+#' completed games.
+#'
+#' @param season_key The ID ("key") of the current Series season spreadsheet
+#' @param season_start When the current season started, in YYYY-MM-DD
+#' @param pairing_ranges The cell references of the ranges in the "API" sheet that have the current season pairings.
+#' @param api_sheet The name of the worksheet that needs to be updated. Usually "API".
+#' @param token Your Lichess API token. Must have the msg:write scope.
+#'
+#' @return Console messages informing you of progress. Final message will read "All done!".
+#' @export n/a
+#'
+#' @examples
+#' series_update()
 series_update <- function(season_key, season_start, pairing_ranges, api_sheet,
                           token){
 
