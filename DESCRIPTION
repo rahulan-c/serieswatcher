@@ -1,12 +1,11 @@
 Package: serieswatcher
-Title: Updates the current Series spreadsheet with results/links of recently completed games.
+Title: Updates the current Series spreadsheet with results/links of recently completed games
 Version: 0.1
 Authors@R: 
     person(given = "Chandrasekaran",
            family = "Rahulan",
-           role = "aut",
-           email = "rahulan.c@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           role = c("aut", "cre"),
+           email = "rahulan.c@gmail.com")
 Description: Updates the current Series spreadsheet with results/links of recently completed games.
 License: `use_mit_license()`
 Encoding: UTF-8
@@ -19,4 +18,7 @@ Imports:
     googlesheets4,
     httr,
     lubridate,
-    jsonlite
+    jsonlite,
+    data.table,
+    stringi,
+    ndjson
