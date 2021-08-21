@@ -77,7 +77,7 @@ send_message <- function(p1, p2, game_id){
 #' @param token Your Lichess API token. Must have the msg:write scope.
 #'
 #' @return Console messages informing you of progress. Final message will read "All done!".
-#' @export n/a
+#' @export
 #'
 #' @examples
 #' series_update()
