@@ -44,7 +44,7 @@ taskscheduleR::taskscheduler_create(taskname = "update_series",
 
 ## Acknowledgements
 
-Credit should o to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script. 
+Credit should go to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script. 
 
 
 
