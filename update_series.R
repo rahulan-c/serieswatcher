@@ -1,9 +1,7 @@
 # Update Series spreadsheet
 # Sources series_watcher.R and calls SeriesUpdate function
 
-# Defined for Series S15
-
-library(taskscheduleR)
+# Currently defined for Series S15
 
 # Source SeriesUpdate function
 source("C:/Users/rahul/Documents/Github/serieswatcher/series_watcher.R")
