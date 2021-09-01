@@ -33,10 +33,9 @@ SeriesUpdate(
 I automate the updates with Windows Task Scheduler, using [taskscheduleR](https://cran.r-project.org/web/packages/taskscheduleR/vignettes/taskscheduleR.html). No doubt there are other ways to do this too! The code below creates a new Task Scheduler task that runs update_series.R every six hours, starting from 00:05 (local time).
 
 ```
-source("R/series_watcher.R)
-
+myscript <- "C:/Users/rahul/Documents/Github/serieswatcher/R/update_series.R"
 taskscheduleR::taskscheduler_create(taskname = "update_series", 
-                                    rscript = "C:/Users/rahul/Documents/Github/serieswatcher/R/update_series.R", 
+                                    rscript = myscript, 
                                     schedule = "HOURLY", 
                                     starttime = "00:05", 
                                     modifier = 6)
