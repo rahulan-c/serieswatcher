@@ -11,16 +11,19 @@ The code in this repository is used to periodically check for recently played ga
 
 ## Usage
 
-### One-off update 
-
-Run update_series.R:
+For a one-off update, call the SeriesUpdate function:
 
 ```
+source(series_watcher.R)
+
+# Current Series spreadsheet ID
+series_sheet <- "1VCA6XIJikVlakblodyfqXcy3rf7UkLPGJ5jlpi6CZ0E"
+
 SeriesUpdate(
-  season_start = "2021-08-09",
-  season_end = "2021-11-01", # best to enter 1 day after the end date
-  season_sheetkey = "1VCA6XIJikVlakblodyfqXcy3rf7UkLPGJ5jlpi6CZ0E",
-  results_sheet = "API",
+  season_start = "2021-08-09",  # use the format "YYYY-MM-DD"
+  season_end = "2021-11-01",    # allowing for games to be played after the official end
+  season_sheetkey = series_sheet,
+  results_sheet = "API",        # sheet to be updated 
   pairing_ranges = c(
     "B2:E45", "G2:J45", "L2:O45", "Q2:T45",
     "V2:Y45", "AA2:AD45", "AF2:AI45"
@@ -28,9 +31,7 @@ SeriesUpdate(
 )
 ```
 
-### Automated updates
-
-I automate the updates with Windows Task Scheduler, using [taskscheduleR](https://cran.r-project.org/web/packages/taskscheduleR/vignettes/taskscheduleR.html). No doubt there are other ways to do this too! The code below creates a new Task Scheduler task that runs update_series.R every six hours, starting from 00:05 (local time).
+To automate the updates, I use [taskscheduleR](https://cran.r-project.org/web/packages/taskscheduleR/vignettes/taskscheduleR.html) to create a new Windows Task Scheduler task to run the script **update_series.R** every six hours, starting from 00:05 (local time).
 
 ```
 myscript <- "C:/Users/rahul/Documents/Github/serieswatcher/R/update_series.R"
