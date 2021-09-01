@@ -1,38 +1,50 @@
 # Series watcher
 
-Series is an online chess league run within the [Lichess4545](https://www.lichess4545.com/) community for true aficionados of classical chess (the time control is 90+30!).
+Series is an online chess league that's run within the [Lichess4545](https://www.lichess4545.com/) community with a classical time control of 90+30.
 
-This package regularly updates the current Series spreadsheet (a Google Sheets file) with the results and links of recently completed games. 
-
-A Github Action runs the function *update_series()* at regular intervals (defined in .github/actions/schedule.yaml). 
-
-When the details of a game are added to the sheet, both players are notified with a direct message on Lichess.
+The code in this repository is used to periodically check for recently played games between players paired together in the current Series season. When it finds a Series game, it updates the current season spreadsheet (a Google Sheets file) with the game's URL and result. Both players are then notified through a direct message on Lichess.
 
 ## Requirements
 
-- The package dependencies: dplyr, tibble, googlesheets4, httr, lubridate, jsonlite, data.table, stringi, ndjson
 - Read/write access to the current Series spreadsheet
-- A valid Lichess API token with the msg:write scope
+- Lichess API token with `msg:write` permissions
 
-## Instructions
+## Usage
 
-*If everything works as it should, no one else should need to use this package, as the sheet should get updated automatically. However, here's how you can use this package if automated updates aren't working or haven't been enabled yet.*
+### One-off update 
+
+Run update_series.R:
+
+```
+SeriesUpdate(
+  season_start = "2021-08-09",
+  season_end = "2021-11-01", # best to enter 1 day after the end date
+  season_sheetkey = "1VCA6XIJikVlakblodyfqXcy3rf7UkLPGJ5jlpi6CZ0E",
+  results_sheet = "API",
+  pairing_ranges = c(
+    "B2:E45", "G2:J45", "L2:O45", "Q2:T45",
+    "V2:Y45", "AA2:AD45", "AF2:AI45"
+  )
+)
+```
+
+### Automated updates
+
+I automate the updates with Windows Task Scheduler, using [taskscheduleR](https://cran.r-project.org/web/packages/taskscheduleR/vignettes/taskscheduleR.html). No doubt there are other ways to do this too! The code below creates a new Task Scheduler task that runs update_series.R every six hours, starting from 00:05 (local time).
 
 ```
 source("R/series_watcher.R)
 
-update_series(season_key = "18i0HckfP063BZYZs5xqRozyqX_Y3nErWoOaiARESrvM",                                   # season sheet key
-              season_start = "2021-05-03",                                                                   # season start date ("YYYY-MM-DD")
-              sheet_to_update = "API",                                                                       # name of worksheet to update (usually "API")
-              pairing_ranges = c('B2:E53', 'G2:J53', 'L2:O53', 'Q2:T53', 'V2:Y53', 'AA2:AD53', 'AF2:AI53'),  # ranges in update sheet that record player pairings 
-              token = "my_lichess_api_token")                                                                # valid Lichess API token (with msg:write scope)
+taskscheduleR::taskscheduler_create(taskname = "update_series", 
+                                    rscript = "C:/Users/rahul/Documents/Github/serieswatcher/R/update_series.R", 
+                                    schedule = "HOURLY", 
+                                    starttime = "00:05", 
+                                    modifier = 6)
 ```
 
 ## Acknowledgements
 
-This package only exists because I came across https://blog--simonpcouch.netlify.app/blog/r-github-actions-commit/. In May 2021, I wrote a Python script for updating the Series sheet. I've only ported it to R because I wanted to automate the process and the above advice indicated how that might be possible through Github Actions. So let's hope it works!
-
-Credit should also go to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script. 
+Credit should o to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script. 
 
 
 
