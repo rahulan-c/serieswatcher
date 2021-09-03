@@ -38,9 +38,7 @@ options(
   googlesheets4_quiet = TRUE
 ) # gs4 has verbose output enabled by default
 
-# Lichess API token - assumed to be saved in "api_token.txt"
-# Needs to be loaded like this instead of from .Renviron to enable automation
-token <- read.delim2("api_token.txt", header = F)[1,1]
+
 
 # Sends a DM on Lichess to a player to tell them that their
 # game has been picked up. Needs a Lichess API token with the msg:write scope.
