@@ -1,25 +1,12 @@
+# SERIES WATCHER
+# Updated: 2021-09-03
 
-# =============================================================================
-#                          SERIES WATCHER
-# =============================================================================
-
-# PURPOSE
-# Updates the "API" sheet in the current Series spreadsheet games between players
-# paired against each other in the current Series season. When it finds such a
-# game it updates the "API" worksheet in the current Series
-# spreadsheet with the game result and URL, before notifying both players on
-# Lichess that their game has been picked up by the "bot", so that they can
-# contact the Series mods in case it's made a mistake.
-
-# CAVEATS
-# - Games must be 90+30 to be picked up.
-# - The script doesn't check if the players had the right colours, or if the
-#   game was rated.
-# - Not currently designed to safely work around Lichess message-sending rate
-#   limits. In other words, if the script is used to send more than 25 Lichess
-#   DMs to "new" players (ie users who have never messaged you)
-
-# Last updated: 2021-09-01
+# Notes:
+# - Only 90+30 games will get picked up.
+# - Doesn't check the players' colours
+# - Doesn't care if the game was rated or not.
+# - Will send messages to all players of newly identified games; isn't tuned
+#   to watch out for Lichess message limits.
 
 # -----------------------------------------------------------------------------
 
@@ -40,11 +27,8 @@ options(
 
 
 
-# Sends a DM on Lichess to a player to tell them that their
-# game has been picked up. Needs a Lichess API token with the msg:write scope.
-# The message is sent from *your* Lichess account. Be careful - sending more than
-# 25 messages in a day to users who you haven't messaged before will get you rate-
-# limited...and your messages won't go through.
+# Notify players on Lichess that their game has been picked up
+# Messages are sent from the account associated with the Lichess API token
 send_message <- function(p1, p2, game_id, token) {
 
   # Define message text
@@ -68,39 +52,25 @@ send_message <- function(p1, p2, game_id, token) {
 }
 
 
-
-#' Updates the current Series spreadsheet with the results / links of recently
-#' completed games.
-#'
-#' @param season_sheetkey The ID ("key") of the current Series season spreadsheet
-#' @param season_start When the current season started, in YYYY-MM-DD
-#' @param pairing_ranges The cell references of the ranges in the "API" sheet that have the current season pairings.
-#' @param results_sheet The name of the worksheet that needs to be updated. Usually "API".
-#' @param token Your Lichess API token. Must have the msg:write scope. Defaults to an (assumed) RStudio environment variable called "LICHESS_TOKEN".
-#'
-#' @return Console messages informing you of progress. Final message will read "All done!".
-#' @export
-#'
-#' @examples
-#' series_update()
-SeriesUpdate <- function(season_sheetkey, # Google Sheets "key" [ID]
-                         results_sheet = "API", # sheet name with results/links to be updated, usually "API"
-                         season_start, # "YYYY-MM-DD", eg "2021-05-03" for 3 May 2021
-                         season_end = "Now", # Season end date, same format as season_start. Defaults to current date and time.
-                         pairing_ranges, # Cell ranges in results_sheets that contain paired player names
-                         token = token) {
+# Function that checks all pairings in the Series sheet, checks for games,
+# updates the sheet with any new games' links and results, and messages both
+# players
+SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Sheet
+                         results_sheet = "API",   # Name of worksheet with pairing details, usually "API". All other sheets are ignored.
+                         season_start,            # Season start date ("YYYY-MM-DD")
+                         season_end = "Now",      # Season end date ("YYYY-MM-DD"), defaults to the current date and time.
+                         pairing_ranges,          # The cell ranges in the pairing sheet (results_sheet) that contain player names
+                         token = token) {         # Lichess API token (must have msg:write privileges)
   options(
-    gargle_oauth_email = TRUE, # to allow non-interactive use
+    gargle_oauth_email = TRUE,
     googlesheets4_quiet = TRUE
-  ) # gs4 has verbose output enabled by default
+  )
 
 
   cli::rule(line = ":", right = paste0("Update started: ",  as.character(Sys.time())))
-
   cli::cli_h1("Series Watcher")
 
   # Define season dates for games search
-  # Start date
   season_start <- as.character(formatC(
     as.numeric(lubridate::parse_date_time(season_start, "ymd")) * 1000,
     digits = 0, format = "f"
@@ -108,7 +78,6 @@ SeriesUpdate <- function(season_sheetkey, # Google Sheets "key" [ID]
 
   # End date
   if (season_end != "Now") {
-    # If user has entered a season end date, use that to define the relevant search period for games
     season_end <- as.character(formatC(
       as.numeric(lubridate::parse_date_time(season_end, "ymd")) * 1000,
       digits = 0, format = "f"
@@ -123,7 +92,6 @@ SeriesUpdate <- function(season_sheetkey, # Google Sheets "key" [ID]
 
   # Get pairing names
   cli::cli_h2("Get pairing data")
-
 
   all_pairs <- list()
   for (r in seq(1:length(pairing_ranges))) {

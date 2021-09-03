@@ -8,7 +8,7 @@ source("C:/Users/rahul/Documents/Github/serieswatcher/series_watcher.R")
 
 # Lichess API token - assumed to be saved in "api_token.txt"
 # Needs to be loaded like this instead of from .Renviron to enable automation
-token <- read.delim2("api_token.txt", header = F)[1,1]
+token <- read.delim2("C:/Users/rahul/Documents/Github/serieswatcher/api_token.txt", header = F)[1,1]
 
 # Call SeriesUpdate
 SeriesUpdate(

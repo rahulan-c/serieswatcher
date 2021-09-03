@@ -2,9 +2,9 @@
 # Updated: 2021-09-03
 
 # User choices ================================================================
-# Testing on a copy of the S14 sheet
 
 # Enter sheet details
+# Currently being tested on a copy of the S15 sheet
 season_sheetid <- "11bxA7-qQuT-g5x7FMU-dQr1dbkEwa_tiYfTbgvkzeW0"
 group_sheetnames <- c("Section A Group Stage", "Section B Group Stage")
 knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
@@ -39,7 +39,7 @@ knockout_pair_ranges <- list()
 
 # Lichess API token - assumed to be saved in "api_token.txt"
 # Needs to be loaded like this instead of from .Renviron to enable automation
-token <- read.delim2("api_token.txt", header = F)[1,1]
+token <- read.delim2("C:/Users/rahul/Documents/Github/serieswatcher/api_token.txt", header = F)[1,1]
 
 
 # Packages, options and functions ---------------------------------------------
@@ -48,7 +48,7 @@ library(googlesheets4)
 library(httr)
 library(lubridate)
 library(jsonlite)
-# library(data.table)
+library(data.table)
 library(stringi)
 library(ndjson)
 library(cli)
