@@ -1,15 +1,15 @@
-# Series watcher
+# Sheetle
 
-Series is an online chess league that's run within the [Lichess4545](https://www.lichess4545.com/) community with a classical time control of 90+30.
+Checks for games played in Lichess4545 community leagues, updates the relevant leagues' Google Sheets spreasheets with game URLs and results, and notifies players on Lichess that their game(s) have been recorded.
 
-The code in this repository is used to periodically check for recently played games between players paired together in the current Series season. When it finds a 90+30 game that is likely to be a Series game, it updates the current Series spreadsheet - a Google Sheets file -  with the game's URL and result, before notifying both players that their game has been recorded through a Lichess message. 
+Currently in operation for Series (90+30). Under development for Rapid Battle (15+10).
 
-## Requirements
+## Requirements (Series)
 
 - Read/write access to the current Series spreadsheet
 - A Lichess API token with msg:write permissions: https://lichess.org/account/oauth/token
 
-## Usage
+## Usage (Series)
 
 For a one-off update, call the SeriesUpdate function:
 
