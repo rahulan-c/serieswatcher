@@ -2,3 +2,6 @@
 .Renviron
 .Rhistory
 .Rproj
+
+update_series.log
+api_token.txt

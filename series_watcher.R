@@ -13,9 +13,8 @@
 
 # CAVEATS
 # - Games must be 90+30 to be picked up.
-# - The players must have the same colours as their spreadsheet pairing. If the
-#   they switched the colours by mistake, the bot won't pick up the game.
-# - The script doesn't care if games are rated or not.
+# - The script doesn't check if the players had the right colours, or if the
+#   game was rated.
 # - Not currently designed to safely work around Lichess message-sending rate
 #   limits. In other words, if the script is used to send more than 25 Lichess
 #   DMs to "new" players (ie users who have never messaged you)
@@ -38,6 +37,10 @@ options(
   gargle_oauth_email = TRUE, # to allow non-interactive use
   googlesheets4_quiet = TRUE
 ) # gs4 has verbose output enabled by default
+
+# Lichess API token - assumed to be saved in "api_token.txt"
+# Needs to be loaded like this instead of from .Renviron to enable automation
+token <- read.delim2("api_token.txt", header = F)[1,1]
 
 # Sends a DM on Lichess to a player to tell them that their
 # game has been picked up. Needs a Lichess API token with the msg:write scope.
@@ -87,14 +90,14 @@ SeriesUpdate <- function(season_sheetkey, # Google Sheets "key" [ID]
                          season_start, # "YYYY-MM-DD", eg "2021-05-03" for 3 May 2021
                          season_end = "Now", # Season end date, same format as season_start. Defaults to current date and time.
                          pairing_ranges, # Cell ranges in results_sheets that contain paired player names
-                         token = Sys.getenv("LICHESS_TOKEN")) {
+                         token = token) {
   options(
     gargle_oauth_email = TRUE, # to allow non-interactive use
     googlesheets4_quiet = TRUE
   ) # gs4 has verbose output enabled by default
 
 
-  cli::rule(line = ">", right = paste0("Update started: ",  as.character(Sys.time())))
+  cli::rule(line = ":", right = paste0("Update started: ",  as.character(Sys.time())))
 
   cli::cli_h1("Series Watcher")
 
@@ -334,5 +337,5 @@ SeriesUpdate <- function(season_sheetkey, # Google Sheets "key" [ID]
     )
     )
   cli_alert_success("Update completed!")
-  cli::rule(line = "<", right = paste0("Update completed: ",  as.character(Sys.time())))
+  cli::rule(line = ":", right = paste0("Update completed: ",  as.character(Sys.time())))
 }
