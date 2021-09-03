@@ -10,11 +10,11 @@ group_sheetnames <- c("Section A Group Stage", "Section B Group Stage")
 knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
 
 # Enter season dates
-group_start_date <- "2021-08-10"
-group_end_date <- "2021-09-21" # 1 day after the end date
+group_start_date <- "2021-08-10"       # assumed to start at 00:00:01 UTC
+group_end_date <- "2021-09-20"         # assumed to last until 23:59:59 UTC
 knockout_start_date <- "2021-06-15"
 
-# Enter the curent phase of the season ("group", "knockout")
+# Enter the current phase of the season ("group", "knockout")
 current_phase <- "group"
 
 # Enter the cell ranges that contain player pairings -- for group stages
@@ -64,18 +64,21 @@ options(
 
 # Functions -------------------------------------------------------------------
 ## Format search dates correctly ----------------------------------------------
-LichessDateFormat <- function(date){
+LichessDateFormat <- function(date, time_modifier){
   date <- as.numeric(formatC(
-    as.numeric(lubridate::parse_date_time(date, "ymd")) * 1000,
+    as.numeric(lubridate::parse_date_time(paste0(date, " ", time_modifier), "ymdHMS")) * 1000,
     digits = 0, format = "f"
   ))
   return(date)
 }
 
-## Search for games btw two players -------------------------------------------
+
+
+## Search for a single group games between two players with known colours -----
+# Used for group stage
 FindGroupGame <- function(white, black,
-                          from = LichessDateFormat(group_start_date),
-                          to = LichessDateFormat(group_end_date),
+                          from = LichessDateFormat(group_start_date, "00:00:01"),
+                          to = LichessDateFormat(group_end_date, "23:59:59"),
                           perf = "rapid",
                           clock = 15,
                           increment = 10){
@@ -165,11 +168,16 @@ FindGroupGame <- function(white, black,
               "pts_b" = pts_b))
 }
 
+
+## Search for all games in a match --------------------------------------------
+# Used for knockout stage (and Quest)
+FindMatchGames <- function(p1, p2,
+                           from = LichessDateFormat(round_start),
+                           to = LichessDateFormat(round_end))
+
 # Start watcher ---------------------------------------------------------------
 cli::rule(line = ">", right = paste0("Update started: ",  as.character(Sys.time())))
 cli::cli_h1("Rapid Battle Watcher")
-
-
 
 # Update group games ----------------------------------------------------------
 if(current_phase == "group") {
@@ -290,6 +298,8 @@ cli::cli_alert_success("Updated all group games")
 # Update knockout games -------------------------------------------------------
 if(current_phase == "knockout") {
   cli::cli_h2("Updating knockout games")
+
+  # TODO
 
 }
 
