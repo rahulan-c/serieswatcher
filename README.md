@@ -2,7 +2,9 @@
 
 Checks for games played in Lichess4545 community leagues, updates leagues' Google Sheets files with game URLs and results, and notifies players on Lichess that their games have been recorded.
 
-Currently in operation for Series. Under development for Rapid Battle and Infinite Quest. Never heard of these? Check out the Lichess4545 [overview](https://bit.ly/35w1xqH). 
+Currently in operation for Series and Rapid Battle (group stage). Soon coming to Infinite Quest. 
+
+Never heard of these leagues? Check out the Lichess4545 [overview](https://bit.ly/35w1xqH). 
 
 ## Requirements (Series)
 
