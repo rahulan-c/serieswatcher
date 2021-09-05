@@ -1,11 +1,10 @@
 # RAPID BATTLE WATCHER
-# Updated: 2021-09-03
+# Updated: 2021-09-04
 
 # User choices ================================================================
 
 # Enter sheet details
-# Currently being tested on a copy of the S15 sheet
-season_sheetid <- "11bxA7-qQuT-g5x7FMU-dQr1dbkEwa_tiYfTbgvkzeW0"
+season_sheetid <- "1N2ixyY6r_COHhBoFrmAzBaMu3taTlEQFIEhC6wJhgSI"
 group_sheetnames <- c("Section A Group Stage", "Section B Group Stage")
 knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
 
@@ -171,9 +170,7 @@ FindGroupGame <- function(white, black,
 
 ## Search for all games in a match --------------------------------------------
 # Used for knockout stage (and Quest)
-FindMatchGames <- function(p1, p2,
-                           from = LichessDateFormat(round_start),
-                           to = LichessDateFormat(round_end))
+# TODO
 
 # Start watcher ---------------------------------------------------------------
 cli::rule(line = ">", right = paste0("Update started: ",  as.character(Sys.time())))
@@ -280,7 +277,7 @@ for (d in seq(1:length(pair_ranges))) {
       reformat = T
     )
     Sys.sleep(1)
-    cli::cli_alert_success("Updated group data!")
+    cli::cli_alert_success("Updated group game details in sheet")
 
     # Add to the list of group data
     group_list[[g]] <- col_list
@@ -289,7 +286,7 @@ for (d in seq(1:length(pair_ranges))) {
   # Add to the list of division data
   div_list[[d]] <- group_list
 }
-cli::cli_alert_success("Updated all group games")
+cli::cli_alert_success("Group phase data checked!")
 
 }
 
@@ -300,6 +297,7 @@ if(current_phase == "knockout") {
   cli::cli_h2("Updating knockout games")
 
   # TODO
+  cli::cli_alert_success("Knockout phase data checked!")
 
 }
 

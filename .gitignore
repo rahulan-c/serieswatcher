@@ -4,4 +4,7 @@
 .Rproj
 
 update_series.log
+rapid_battle_watcher.log
 api_token.txt
+
+tests/**

@@ -13,7 +13,7 @@ token <- read.delim2("C:/Users/rahul/Documents/Github/serieswatcher/api_token.tx
 # Call SeriesUpdate
 SeriesUpdate(
   season_start = "2021-08-09",
-  season_end = "2021-11-01", # best to enter 1 day after the end date
+  season_end = "2021-11-01",
   season_sheetkey = "1VCA6XIJikVlakblodyfqXcy3rf7UkLPGJ5jlpi6CZ0E",
   results_sheet = "API",
   pairing_ranges = c(

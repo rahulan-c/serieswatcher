@@ -19,6 +19,7 @@ library(data.table)
 library(stringi)
 library(ndjson)
 library(cli)
+library(emo)
 
 options(
   gargle_oauth_email = TRUE, # to allow non-interactive use
@@ -33,11 +34,12 @@ send_message <- function(p1, p2, game_id, token) {
 
   # Define message text
   message <- sprintf(
-    "The Series bot thinks it has found your game against @%s
-  and has updated the current season's spreadsheet accordingly. If this was a
-  mistake, please contact the Series mods to fix it. If it's correct, you don't
-                     need to do anything. This is an automated message.\n\nGame ID: %s",
-    p2, game_id
+    "%s Series game logged %s
+
+    FYI your 90+30 game with @%s has just been added to the Series spreadsheet. If this was a mistake, please contact the Series mods. If it's correct, you don't need to do anything.
+
+    %s",
+    emo::ji("abacus"), emo::ji("beetle"), p2, paste0("https://lichess.org/", game_id)
   )
 
   # Send message using Lichess API
@@ -50,6 +52,7 @@ send_message <- function(p1, p2, game_id, token) {
   )
   return(send)
 }
+
 
 
 # Function that checks all pairings in the Series sheet, checks for games,
