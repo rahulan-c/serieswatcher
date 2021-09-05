@@ -1,8 +1,10 @@
-# Sheetle
+# sheetle
 
-Checks for games played in Lichess4545 community leagues, updates the relevant leagues' Google Sheets spreasheets with game URLs and results, and notifies players on Lichess that their game(s) have been recorded.
+Checks for games played in Lichess4545 community leagues, updates leagues' Google Sheets files with game URLs and results, and notifies players on Lichess that their games have been recorded.
 
-Currently in operation for Series (90+30). Under development for Rapid Battle (15+10).
+Currently in operation for Series and Rapid Battle (group stage). Soon coming to Infinite Quest. 
+
+Never heard of these leagues? Check out the Lichess4545 [overview](https://bit.ly/35w1xqH). 
 
 ## Requirements (Series)
 
@@ -44,7 +46,7 @@ taskscheduleR::taskscheduler_create(taskname = "update_series",
 
 ## Acknowledgements
 
-Credit should go to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script. 
+Credit should go to [erv123](https://www.lichess4545.com/team4545/player/erv123/) for developing the first Series results update script and for their pioneering efforts for the League of Nations in April 2020. 
 
 
 
