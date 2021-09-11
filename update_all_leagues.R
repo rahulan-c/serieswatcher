@@ -1,7 +1,21 @@
-# UPDATE ALL LEAGUES
-# Unifies the update processes/scripts for Series, Rapid Battle and Quest
+# UPDATE ALL ACTIVE COMMUNITY LEAGUES
 
 # Last updated: 2021-09-11
+
+# Sequentially checks for games played in Series, Rapid Battle and Quest before
+# updating each league's current Google spreadsheet with relevant game/match
+# data, including game URLs and results. For Series, when a recently played game
+# is identified, it also sends a direct message on Lichess to both players,
+# notifying them that their game has been picked up and recorded. The messages
+# are sent from https://lichess.org/@/sheetle.
+
+# Calls a separate update script for each league:
+# /series_watcher.R
+# /rapid_battle_watcher.R
+# /quest_watcher.R
+
+# TODO
+# - extend Rapid Battle script to cover the knockout phase too
 
 
 # Define active leagues / settings ============================================
@@ -51,8 +65,7 @@ quest_sheetname <- "Raw Data"
 
 
 ## Lichess API token ----------------------------------------------------------
-root <- read.delim2(paste0("C:/Users/rahul/Documents/Github/serieswatcher/path_root.txt"),
-                    header = F)[1,1]
+root <- "C:/Users/rahul/Documents/Github/serieswatcher/"
 token <- read.delim2(paste0(root, "api_token.txt"),
                      header = F)[1,1]
 
@@ -88,9 +101,9 @@ LichessDateFormat <- function(date, time_modifier){
 
 
 # Update active leagues =======================================================
-
 tictoc::tic()
 cli::cli_alert_info("Starting all league updates: {Sys.time()}")
+
 
 ## Update Series --------------------------------------------------------------
 
@@ -110,6 +123,7 @@ if(series_active) {
   )
   cli::cli_alert_success("Series update completed: {Sys.time()}")
 }
+
 
 ## Update Rapid Battle --------------------------------------------------------
 
@@ -139,12 +153,12 @@ cli::cli_rule()
 
 
 # # Automate using Windows Task Scheduler =====================================
-# Not run (but would need to be run in the console anyway)
-# Set to run every 6 hours
+# Would need to be run in the console anyway
+# Creates a task that runs this script every 6 hours
 # taskscheduleR::taskscheduler_create(taskname = "check_community_leagues",
 #                                     rscript = glue::glue("{here::here()}/update_all_leagues.R"),
 #                                     schedule = "HOURLY",
-#                                     starttime = "23:00",
+#                                     starttime = "17:00",
 #                                     modifier = 6)
 
 
