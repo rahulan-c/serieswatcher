@@ -50,13 +50,19 @@ QuestUpdate <- function(week_choice){
   quest_pairs <- range_read(
     ss = sheetid,
     sheet = sheetname,
-    range = "F:N",
+    range = "F:AH",
     col_names = T
   )
   Sys.sleep(1)
-  colnames(quest_pairs) <- c("round_start", "round_end", "week", "board",
+  colnames(quest_pairs)[1:29] <- c("round_start", "round_end", "week", "board",
                              "fullstring_a", "fullstring_b", "result_reported",
-                             "player_a", "player_b")
+                             "player_a", "player_b", "level_a", "level_b",
+                             "rating_a", "rating_b", "result_rapid1", "result_rapid2",
+                             "result_rapid3", "result_rapid4", "result_blitz1",
+                             "result_blitz2", "result_arma", "link_rapid1",
+                             "link_rapid2", "link_rapid3", "link_rapid4",
+                             "link_blitz1", "link_blitz2", "link_arma",
+                             "result_computed", "match_completed")
 
 
   quest_pairs <- quest_pairs %>%
@@ -84,32 +90,43 @@ QuestUpdate <- function(week_choice){
     "p1" = quest_pairs$player_a,
     "p2" = quest_pairs$player_b,
     "row" = quest_pairs$sheet_row,
-    "rating1" = rep(NA, nrow(quest_pairs)),
-    "rating2" = rep(NA, nrow(quest_pairs)),
-    "res_rapid1" = rep(NA, nrow(quest_pairs)),
-    "res_rapid2" = rep(NA, nrow(quest_pairs)),
-    "res_rapid3" = rep(NA, nrow(quest_pairs)),
-    "res_rapid4" = rep(NA, nrow(quest_pairs)),
-    "res_blitz1" = rep(NA, nrow(quest_pairs)),
-    "res_blitz2" = rep(NA, nrow(quest_pairs)),
-    "res_arma" = rep(NA, nrow(quest_pairs)),
-    "link_rapid1" = rep(NA, nrow(quest_pairs)),
-    "link_rapid2" = rep(NA, nrow(quest_pairs)),
-    "link_rapid3" = rep(NA, nrow(quest_pairs)),
-    "link_rapid4" = rep(NA, nrow(quest_pairs)),
-    "link_blitz1" = rep(NA, nrow(quest_pairs)),
-    "link_blitz2" = rep(NA, nrow(quest_pairs)),
-    "link_arma" = rep(NA, nrow(quest_pairs)),
-    "result_computed" = rep(NA, nrow(quest_pairs))
+    "rating1" = quest_pairs$rating_a,
+    "rating2" = quest_pairs$rating_b,
+    "res_rapid1" = quest_pairs$result_rapid1,
+    "res_rapid2" = quest_pairs$result_rapid2,
+    "res_rapid3" = quest_pairs$result_rapid3,
+    "res_rapid4" = quest_pairs$result_rapid4,
+    "res_blitz1" = quest_pairs$result_blitz1,
+    "res_blitz2" = quest_pairs$result_blitz2,
+    "res_arma" = quest_pairs$result_arma,
+    "link_rapid1" = quest_pairs$link_rapid1,
+    "link_rapid2" = quest_pairs$link_rapid2,
+    "link_rapid3" = quest_pairs$link_rapid3,
+    "link_rapid4" = quest_pairs$link_rapid4,
+    "link_blitz1" = quest_pairs$link_blitz1,
+    "link_blitz2" = quest_pairs$link_blitz2,
+    "link_arma" = quest_pairs$link_arma,
+    "result_computed" = quest_pairs$result_computed,
+    "match_completed" = quest_pairs$match_completed
   )
 
 
   # Get match/game data for each round pairing
-  cli::cli_inform("Need data on {nrow(round_pairs)} pairings")
+  cli::cli_inform("Quest R{round_pairs$round[1]}: about to check {nrow(round_pairs)} pairings")
 
   for (m in seq(1:nrow(round_pairs))) {
 
-    cli::cli_inform("{m}) {round_pairs$p1[m]}-{round_pairs$p2[m]}")
+    cli::cli_inform("{m}/{nrow(round_pairs)} {round_pairs$p1[m]}-{round_pairs$p2[m]}")
+
+    # Ignore if the match has already been completed, or if the match score in
+    # the Quest sheet is listed as 3-3
+    if (round_pairs$match_completed[m] %in% c("y", "arma")) {
+      cli::cli_alert_info("Completed and previously recorded in sheet.")
+      next
+    } else if (round_pairs$result_computed[m] %in% c("3-3")) {
+      cli::cli_alert_info("Completed and previously recorded in sheet.")
+      next
+    }
 
     # Query Lichess API for rapid games in that week
     query <- httr::GET(
@@ -145,6 +162,7 @@ QuestUpdate <- function(week_choice){
     # search query. If still no luck, move to the next pairing
     if(res == ""){
       cli::cli_inform("No games found. Trying a reversed search")
+
       query2 <- httr::GET(
         url = "https://lichess.org",
         path = paste0("/api/games/user/", round_pairs$p2[m]),
@@ -159,6 +177,9 @@ QuestUpdate <- function(week_choice){
         httr::add_headers(`Authorization` = sprintf("Bearer %s", token)),
         accept("application/x-ndjson")
       )
+
+      Sys.sleep(2)
+
       if (query2$status_code != 200) {
         print(http_status(query2)$message)
         cli::cli_alert_danger("The Lichess API query returned an error. Stopping process.")
@@ -269,6 +290,12 @@ QuestUpdate <- function(week_choice){
     p1score <- sum(match_data$p1_pts, na.rm = T)
     p2score <- sum(match_data$p2_pts, na.rm = T)
     cli::cli_alert_info("{p1score}-{p2score} after rapid")
+    round_pairs$result_computed[m] <- glue::glue("{p1score}-{p2score}")
+
+    # If a winner can be identified, record the match as completed
+    if(max(p1score, p2score) >= 2.5) {
+      round_pairs$match_completed[m] <- "y"
+    }
 
 
     # Tied matches
@@ -323,6 +350,9 @@ QuestUpdate <- function(week_choice){
           httr::add_headers(`Authorization` = sprintf("Bearer %s", token)),
           accept("application/x-ndjson")
         )
+
+        Sys.sleep(2)
+
         if (query2$status_code != 200) {
           print(http_status(query2)$message)
           cli::cli_alert_danger("The Lichess API query returned an error. Stopping process.")
@@ -406,7 +436,18 @@ QuestUpdate <- function(week_choice){
                                            NA)
 
       # Report match score after identified blitz tiebreaks
-      cli::cli_alert_info("{p1score + sum(tb_data$p1_pts, na.rm = T)}-{p2score + sum(tb_data$p2_pts, na.rm = T)} after rapid + blitz")
+      p1score <- p1score + sum(tb_data$p1_pts, na.rm = T)
+      p2score <- p2score + sum(tb_data$p2_pts, na.rm = T)
+      cli::cli_alert_info("{p1score}-{p2score} after rapid + blitz")
+      round_pairs$result_computed[m] <- glue::glue("{p1score}-{p2score}")
+
+      # If a clear winner can be identified, record the match as completed and
+      # store the match result
+      if((p1score > p2score) || (p2score > p1score)) {
+        round_pairs$match_completed[m] <- "y"
+      } else if((p1score == 3) & (p2score == 3)){
+        round_pairs$match_completed[m] <- "arma"
+      }
 
       # Check match score
       # If it's still tied, check for an armageddon game
@@ -419,11 +460,11 @@ QuestUpdate <- function(week_choice){
 
   cli::cli_alert_info("Checked all pairings")
 
-  round_pairs$result_computed <- NULL
+  # round_pairs$result_computed <- NULL
 
   # Update Quest sheet with identified round pairing data
   googlesheets4::range_write(ss = sheetid, sheet = sheetname,
-                             range = glue::glue("Q{round_pairs$row[1]}:AF{round_pairs$row[nrow(round_pairs)]}"),
+                             range = glue::glue("Q{round_pairs$row[1]}:AH{round_pairs$row[nrow(round_pairs)]}"),
                              data = tibble(round_pairs[,7:ncol(round_pairs)]),
                              col_names = F, reformat = T)
 
@@ -435,22 +476,22 @@ QuestUpdate <- function(week_choice){
 
 # Call function ===============================================================
 
-## For a single round ---------------------------------------------------------
-# Run QuestUpdate() for a single round
+## Update Quest result for a single weeks/rounds ------------------------------
+# Not run
 # QuestUpdate(week_choice = 2)
 
 
-## For multiple rounds --------------------------------------------------------
-# Update Quest sheet for multiple rounds
+## Update Quest results for multiple weeks/rounds -----------------------------
+# Not run
+# round_range <- c(35)
+# for (r in seq(1:length(round_range))) {
+#   QuestUpdate(week_choice = round_range[[r]])
+#   Sys.sleep(5)
+# }
 
-round_range <- c(2)
 
-round_range <- c(18:25)
->>>>>>> e422c951287d49a3ca9dee01bafc370932af9cc3
-for (r in seq(1:length(round_range))) {
-  QuestUpdate(week_choice = round_range[[r]])
-  Sys.sleep(5)
-}
+## Update Quest results for the latest week/round -----------------------------
+QuestUpdate(week_choice = "latest")
 
 
 
