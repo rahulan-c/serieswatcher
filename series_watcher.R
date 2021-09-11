@@ -8,18 +8,6 @@
 # - Will send messages to all players of newly identified games; isn't tuned
 #   to watch out for Lichess message limits.
 
-# -----------------------------------------------------------------------------
-
-library(tidyverse)
-library(googlesheets4)
-library(httr)
-library(lubridate)
-library(jsonlite)
-library(data.table)
-library(stringi)
-library(ndjson)
-library(cli)
-library(emo)
 
 options(
   gargle_oauth_email = TRUE, # to allow non-interactive use
@@ -70,8 +58,8 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
   )
 
 
-  cli::rule(line = ":", right = paste0("Update started: ",  as.character(Sys.time())))
-  cli::cli_h1("Series Watcher")
+  # cli::rule(line = ":", right = paste0("Update started: ",  as.character(Sys.time())))
+  # cli::cli_h1("Series Watcher")
 
   # Define season dates for games search
   season_start <- as.character(formatC(
@@ -94,7 +82,7 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
   }
 
   # Get pairing names
-  cli::cli_h2("Get pairing data")
+  # cli::cli_h2("Get pairing data")
 
   all_pairs <- list()
   for (r in seq(1:length(pairing_ranges))) {
@@ -114,10 +102,10 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
 
   all_pairs$status <- rep(NA, nrow(all_pairs))
 
-  cli::cli_h2("Looking for games")
+  # cli::cli_h2("Looking for games")
 
-  cli::cli_alert_info(paste0(nrow(all_pairs), " pairings to check..."))
-  sb <- cli_status("{symbol$arrow_right} Checking pairing...")
+  # cli::cli_alert_info(paste0(nrow(all_pairs), " pairings to check..."))
+  # sb <- cli_status("{symbol$arrow_right} Checking pairing...")
 
   # Search for potential Series games for each unplayed pairing
   for (p in seq(1:nrow(all_pairs))) {
@@ -126,17 +114,17 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
     query_w <- all_pairs$white[p]
     query_b <- all_pairs$black[p]
 
-    cli_status_update(
-      id = sb,
-      "{symbol$arrow_right} ({p}) {query_w}-{query_b}"
-    )
+    # cli_status_update(
+    #   id = sb,
+    #   "{symbol$arrow_right} ({p}) {query_w}-{query_b}"
+    # )
 
     # If there's already a game and result recorded, ignore and move to the next one
     if ((!(is.na(all_pairs$link[p]))) || (!(is.na(all_pairs$score_w[p])))) {
-      cli_status_update(
-        id = sb,
-        "{symbol$tick} ({p}) Already played: {all_pairs$link[p]} ({all_pairs$score_w[p]}-{1-all_pairs$score_w[p]})"
-      )
+      # cli_status_update(
+      #   id = sb,
+      #   "{symbol$tick} ({p}) Already played: {all_pairs$link[p]} ({all_pairs$score_w[p]}-{1-all_pairs$score_w[p]})"
+      # )
       all_pairs$status[p] <- "old"
       next
     }
@@ -145,10 +133,10 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
     if ((is.na(all_pairs$white[p])) || (all_pairs$white[p] == "") ||
       (is.na(all_pairs$black[p])) || (all_pairs$black[p] == "")
     ) {
-      cli_status_update(
-        id = sb,
-        "{symbol$tick} ({p}) Invalid"
-      )
+      # cli_status_update(
+      #   id = sb,
+      #   "{symbol$tick} ({p}) Invalid"
+      # )
       all_pairs$status[p] <- "invalid"
       next
     }
@@ -193,10 +181,10 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
 
       # If only one suitable 90+30 game found, assume it's their Series game
       if (nrow(res) == 1) {
-        cli_status_update(
-          id = sb,
-          "{symbol$tick} ({p}) Found! {res$id}"
-        )
+        # cli_status_update(
+        #   id = sb,
+        #   "{symbol$tick} ({p}) Found! {res$id}"
+        # )
 
         # Extract White score
         score_w <- ifelse(res$status %in% c("draw", "stalemate"), 0.5, 99)
@@ -211,38 +199,38 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
         all_pairs$link[p] <- paste0("https://lichess.org/", res$id)
 
         # Notify both players on Lichess that their game was picked up
-        cli::cli_status_update(
-          id = sb,
-          "{symbol$arrow_right} ({p}) Sending Lichess DMs to both players"
-        )
+        # cli::cli_status_update(
+        #   id = sb,
+        #   "{symbol$arrow_right} ({p}) Sending Lichess DMs to both players"
+        # )
         send_message(all_pairs$white[p], all_pairs$black[p], str_sub(all_pairs$link[p], start = -8),
                      token = token)
         Sys.sleep(1)
         send_message(all_pairs$black[p], all_pairs$white[p], str_sub(all_pairs$link[p], start = -8),
                      token = token)
-        cli::cli_status_update(
-          id = sb,
-          "{symbol$tick} ({p}) DMs sent"
-        )
+        # cli::cli_status_update(
+        #   id = sb,
+        #   "{symbol$tick} ({p}) DMs sent"
+        # )
         Sys.sleep(1)
 
 
         # If more than one suitable 90+30 game found...
       } else if (nrow(res) > 1) {
-        cli_status_update(
-          id = sb,
-          "{symbol$cross} ({p}) Too many suitable games found: {str_c(res$id, collapse = ' ')}"
-        )
+        # cli_status_update(
+        #   id = sb,
+        #   "{symbol$cross} ({p}) Too many suitable games found: {str_c(res$id, collapse = ' ')}"
+        # )
         all_pairs$status[p] <- "multiple"
         Sys.sleep(0.2)
         next
 
         # If no suitable 90+30 games found...
       } else {
-        cli_status_update(
-          id = sb,
-          "{symbol$cross} ({p}) No suitable games found"
-        )
+        # cli_status_update(
+        #   id = sb,
+        #   "{symbol$cross} ({p}) No suitable games found"
+        # )
         all_pairs$status[p] <- "none (series)"
         Sys.sleep(0.2)
         next
@@ -250,27 +238,27 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
 
       # If no suitable classical games found...
     } else {
-      cli_status_update(
-        id = sb,
-        "{symbol$cross} ({p}) No suitable games found"
-      )
+      # cli_status_update(
+      #   id = sb,
+      #   "{symbol$cross} ({p}) No suitable games found"
+      # )
       all_pairs$status[p] <- "none (classical)"
       Sys.sleep(0.2)
       next
     }
   }
 
-  cli::cli_status_clear(id = sb)
-  cli::cli_alert_success("All pairings checked!")
+  # cli::cli_status_clear(id = sb)
+  # cli::cli_alert_success("All pairings checked!")
 
   # Update the Google sheet with the new information
-  cli::cli_h2("Updating the spreadsheet")
+  # cli::cli_h2("Updating the spreadsheet")
 
   # Compile data for updating sheet
   update_data <- all_pairs %>% group_split(range, .keep = T)
 
-  cli::cli_alert_info("About to update {length(update_data)} ranges")
-  sb <- cli_status("{symbol$arrow_right} Range updated")
+  # cli::cli_alert_info("About to update {length(update_data)} ranges")
+  # sb <- cli_status("{symbol$arrow_right} Range updated")
 
   # Update sheet by pairing range
   for (r in seq(1:length(update_data))) {
@@ -281,14 +269,14 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
       range = pairing_ranges[r],
       col_names = F
     )
-    cli_status_update(
-      id = sb,
-      "{symbol$tick} {r}/{length(update_data)} ranges updated"
-    )
-    Sys.sleep(0.5)
+    # cli_status_update(
+    #   id = sb,
+    #   "{symbol$tick} {r}/{length(update_data)} ranges updated"
+    # )
+    Sys.sleep(2)
   }
-  cli::cli_status_clear(id = sb)
-  cli::cli_alert_success("Spreadsheet fully updated!")
+  # cli::cli_status_clear(id = sb)
+  # cli::cli_alert_success("Spreadsheet fully updated!")
 
   # Report how many pairings were checked and updated
   total <- nrow(all_pairs)
@@ -297,7 +285,7 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
   unplayed <- all_pairs %>% filter(str_detect(status, "none")) %>% nrow()
   found <- all_pairs %>% filter(status == "found") %>% nrow()
 
-  cli::cli_h2("Update summary")
+  # cli::cli_h2("Update summary")
   cli::cli_dl(c(
     "Total pairings" = total - invalid,
     "Previously recorded" = old,
@@ -305,6 +293,6 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
     "Unplayed" = unplayed
     )
     )
-  cli_alert_success("Update completed!")
-  cli::rule(line = ":", right = paste0("Update completed: ",  as.character(Sys.time())))
+  # cli_alert_success("Update completed!")
+  # cli::rule(line = ":", right = paste0("Update completed: ",  as.character(Sys.time())))
 }

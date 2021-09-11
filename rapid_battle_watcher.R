@@ -4,72 +4,30 @@
 # User choices ================================================================
 
 # Enter sheet details
-season_sheetid <- "1N2ixyY6r_COHhBoFrmAzBaMu3taTlEQFIEhC6wJhgSI"
-group_sheetnames <- c("Section A Group Stage", "Section B Group Stage")
-knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
+season_sheetid <- rb_sheetid
+group_sheetnames <- rb_group_sheetnames
+knockout_sheetnames <- rb_knockout_sheetnames
 
 # Enter season dates
-group_start_date <- "2021-08-10"       # assumed to start at 00:00:01 UTC
-group_end_date <- "2021-09-20"         # assumed to last until 23:59:59 UTC
-knockout_start_date <- "2021-06-15"
+group_start_date <- rb_group_start_date
+group_end_date <- rb_group_end_date
+knockout_start_date <- rb_knockout_start_date
+knockout_end_date <- rb_knockout_end_date
 
 # Enter the current phase of the season ("group", "knockout")
-current_phase <- "group"
+current_phase <- rb_stage
 
 # Enter the cell ranges that contain player pairings -- for group stages
-pair_ranges <- list(
-
-  # Div A
-  list(c("A12:A53", "D12:G53"),
-       c("J12:J53", "M12:P53"),
-       c("A65:A106", "D65:G106"),
-       c("J65:J106", "M65:P106")),
-
-  # Div B
-  list(c("A12:A53", "D12:G53"),
-       c("J12:J53", "M12:P53"),
-       c("A65:A106", "D65:G106"),
-       c("J65:J106", "M65:P106"))
-  )
+pair_ranges <- rb_group_pair_ranges
 
 # Enter cell ranges for knockout pairings
-knockout_pair_ranges <- list()
-# TODO
-
-# Lichess API token - assumed to be saved in "api_token.txt"
-# Needs to be loaded like this instead of from .Renviron to enable automation
-token <- read.delim2("C:/Users/rahul/Documents/Github/serieswatcher/api_token.txt", header = F)[1,1]
-
-
-# Packages, options and functions ---------------------------------------------
-library(tidyverse)
-library(googlesheets4)
-library(httr)
-library(lubridate)
-library(jsonlite)
-library(data.table)
-library(stringi)
-library(ndjson)
-library(cli)
-library(tictoc)
-
-tictoc::tic("Updated all games")
+knockout_pair_ranges <- rb_knockout_pair_ranges
 
 # googlesheets4 options
 options(
   gargle_oauth_email = TRUE,
   googlesheets4_quiet = TRUE
 )
-
-# Functions -------------------------------------------------------------------
-## Format search dates correctly ----------------------------------------------
-LichessDateFormat <- function(date, time_modifier){
-  date <- as.numeric(formatC(
-    as.numeric(lubridate::parse_date_time(paste0(date, " ", time_modifier), "ymdHMS")) * 1000,
-    digits = 0, format = "f"
-  ))
-  return(date)
-}
 
 
 
@@ -173,12 +131,12 @@ FindGroupGame <- function(white, black,
 # TODO
 
 # Start watcher ---------------------------------------------------------------
-cli::rule(line = ">", right = paste0("Update started: ",  as.character(Sys.time())))
-cli::cli_h1("Rapid Battle Watcher")
+# cli::rule(line = ">", right = paste0("Update started: ",  as.character(Sys.time())))
+# cli::cli_h1("Rapid Battle Watcher")
 
 # Update group games ----------------------------------------------------------
 if(current_phase == "group") {
-cli::cli_h2("Updating group games")
+# cli::cli_h2("Updating group games")
 
 # Extract group players and pairings by looping over all divisions, groups,
 # and colour lists
@@ -217,19 +175,19 @@ for (d in seq(1:length(pair_ranges))) {
     col_list[[3]] <- col_list[[3]] %>%
       mutate(across(c(pts_w, pts_b), as.numeric))
 
-    cli::cli_alert_info("Identified {nrow(col_list[[3]])} group pairings to check")
+    # cli::cli_alert_info("Identified {nrow(col_list[[3]])} group pairings to check")
 
     # Now see if each pairing has been played or not...
     # And if not, search for games...
-    cli::cli_inform("Checking group pairings...")
+    # cli::cli_inform("Checking group pairings...")
     for (p in seq(1:nrow(col_list[[3]]))) {
 
-      cli::cli_inform("{p}/{nrow(col_list[[3]])} {col_list[[3]]$white[p]}-{col_list[[3]]$black[p]}")
+      # cli::cli_inform("{p}/{nrow(col_list[[3]])} {col_list[[3]]$white[p]}-{col_list[[3]]$black[p]}")
 
       # Pairings with previously recorded gamelinks/results
       if (!(is.na(col_list[[3]]$link[p])))  {
         col_list[[3]]$status[p] <- "old"
-        cli::cli_inform("previously recorded")
+        # cli::cli_inform("previously recorded")
         next
       }
 
@@ -238,11 +196,11 @@ for (d in seq(1:length(pair_ranges))) {
           (is.na(col_list[[3]]$black[p])) || (col_list[[3]]$black[p] == "")
       ) {
         col_list[[3]]$status[p] <- "invalid"
-        cli::cli_inform("invalid pairing")
+        # cli::cli_inform("invalid pairing")
         next
       } else {
 
-        cli::cli_inform("not played -> searching for games...")
+        # cli::cli_inform("not played -> searching for games...")
 
       # Pairings that need to be checked...
       # Search for games - call find_games()
@@ -250,7 +208,7 @@ for (d in seq(1:length(pair_ranges))) {
                                black = col_list[[3]]$black[p])
 
       # Report the pairing's new status (after searching)
-      cli::cli_inform("{search_res$status} {search_res$id}")
+      # cli::cli_inform("{search_res$status} {search_res$id}")
       Sys.sleep(2)
 
       # Update pairing data
@@ -277,7 +235,7 @@ for (d in seq(1:length(pair_ranges))) {
       reformat = T
     )
     Sys.sleep(1)
-    cli::cli_alert_success("Updated group game details in sheet")
+    # cli::cli_alert_success("Updated group game details in sheet")
 
     # Add to the list of group data
     group_list[[g]] <- col_list
@@ -286,7 +244,7 @@ for (d in seq(1:length(pair_ranges))) {
   # Add to the list of division data
   div_list[[d]] <- group_list
 }
-cli::cli_alert_success("Group phase data checked!")
+# cli::cli_alert_success("Group phase data checked!")
 
 }
 
@@ -294,15 +252,15 @@ cli::cli_alert_success("Group phase data checked!")
 
 # Update knockout games -------------------------------------------------------
 if(current_phase == "knockout") {
-  cli::cli_h2("Updating knockout games")
+  # cli::cli_h2("Updating knockout games")
 
   # TODO
-  cli::cli_alert_success("Knockout phase data checked!")
+  # cli::cli_alert_success("Knockout phase data checked!")
 
 }
 
 # Report total time taken
-tictoc::toc(log = T)
+# tictoc::toc(log = T)
 
 # End watcher -----------------------------------------------------------------
-
+# cli::rule(line = "<", right = paste0("Update ended: ",  as.character(Sys.time())))
