@@ -92,13 +92,13 @@ QuestUpdate <- function(week_choice){
     "res_rapid4" = rep(NA, nrow(quest_pairs)),
     "res_blitz1" = rep(NA, nrow(quest_pairs)),
     "res_blitz2" = rep(NA, nrow(quest_pairs)),
+    "res_arma" = rep(NA, nrow(quest_pairs)),
     "link_rapid1" = rep(NA, nrow(quest_pairs)),
     "link_rapid2" = rep(NA, nrow(quest_pairs)),
     "link_rapid3" = rep(NA, nrow(quest_pairs)),
     "link_rapid4" = rep(NA, nrow(quest_pairs)),
     "link_blitz1" = rep(NA, nrow(quest_pairs)),
     "link_blitz2" = rep(NA, nrow(quest_pairs)),
-    "res_arma" = rep(NA, nrow(quest_pairs)),
     "link_arma" = rep(NA, nrow(quest_pairs)),
     "result_computed" = rep(NA, nrow(quest_pairs))
   )
@@ -141,10 +141,38 @@ QuestUpdate <- function(week_choice){
                                    encoding = stringi::stri_enc_detect(httr::content(
                                      query, "raw"))[[1]][1, 1])
 
-    # If no games found, move on to the next pairing
+    # If no games found, try switching the players around in the Lichess games
+    # search query. If still no luck, move to the next pairing
     if(res == ""){
-      cli::cli_inform("No games found")
-      next
+      cli::cli_inform("No games found. Trying a reversed search")
+      query2 <- httr::GET(
+        url = "https://lichess.org",
+        path = paste0("/api/games/user/", round_pairs$p2[m]),
+        query = list(
+          since = LichessDateFormat(round_pairs$round_start[m], "00:00:01"),
+          until = LichessDateFormat(round_pairs$round_end[m], "23:59:59"),
+          perfType = perf,
+          vs = round_pairs$p1[m],
+          rated  = "true",
+          clocks = "true"
+        ),
+        httr::add_headers(`Authorization` = sprintf("Bearer %s", token)),
+        accept("application/x-ndjson")
+      )
+      if (query2$status_code != 200) {
+        print(http_status(query2)$message)
+        cli::cli_alert_danger("The Lichess API query returned an error. Stopping process.")
+        break
+      }
+      res2 <- query2 %>% httr::content("text",
+                                     encoding = stringi::stri_enc_detect(httr::content(
+                                       query2, "raw"))[[1]][1, 1])
+      if(res2 == ""){
+        cli::cli_inform("No games found in either player's history.")
+        next
+      } else {
+        res <- res2
+      }
     }
 
     # If at least one game has been returned...
@@ -278,9 +306,40 @@ QuestUpdate <- function(week_choice){
                                            encoding = stringi::stri_enc_detect(httr::content(
                                              query_tb, "raw"))[[1]][1, 1])
 
-      if(res_tb == "") { cli::cli_inform("No games found")}
+      if(res_tb == "") {
 
-      res_tb <- res_tb %>%read_lines() %>% ndjson::flatten()
+        cli::cli_alert_warning("No possible tiebreak games found. Will try searching with the players reversed.")
+        query2 <- httr::GET(
+          url = "https://lichess.org",
+          path = paste0("/api/games/user/", round_pairs$p2[m]),
+          query = list(
+            since = time_last_rapid,
+            until = LichessDateFormat(round_pairs$round_end[m], "23:59:59"),
+            perfType = perf_tiebreak,
+            vs = round_pairs$p1[m],
+            rated  = "true",
+            clocks = "true"
+          ),
+          httr::add_headers(`Authorization` = sprintf("Bearer %s", token)),
+          accept("application/x-ndjson")
+        )
+        if (query2$status_code != 200) {
+          print(http_status(query2)$message)
+          cli::cli_alert_danger("The Lichess API query returned an error. Stopping process.")
+          break
+        }
+        res2 <- query2 %>% httr::content("text",
+                                         encoding = stringi::stri_enc_detect(httr::content(
+                                           query2, "raw"))[[1]][1, 1])
+        if(res2 == ""){
+          cli::cli_inform("No possible tiebreak games found in either player's history.")
+          next
+        } else {
+          res_tb <- res2
+        }
+        } else {
+
+      res_tb <- res_tb %>% read_lines() %>% ndjson::flatten()
 
       res_tb <- res_tb %>%
         filter(clock.initial == clock_tiebreak * 60 &
@@ -292,7 +351,7 @@ QuestUpdate <- function(week_choice){
       # If there are no suitable blitz games identified (or if there are more
       # than 2), abandon the search
       if ((nrow(res_tb) == 0) || (nrow(res_tb) > 2)) {
-        cli::cli_inform("Zero or more than 2 candidate blitz games identified, can't proceed")
+        cli::cli_alert_warning("Zero or 3+ candidate tiebreak games identified, can't proceed")
         next
       }
 
@@ -353,6 +412,7 @@ QuestUpdate <- function(week_choice){
       # If it's still tied, check for an armageddon game
       # TODO
 
+        }
     }
 
   } # end pairing loop
@@ -360,8 +420,6 @@ QuestUpdate <- function(week_choice){
   cli::cli_alert_info("Checked all pairings")
 
   round_pairs$result_computed <- NULL
-
-  # x <- tibble(round_pairs[,7:ncol(round_pairs)])
 
   # Update Quest sheet with identified round pairing data
   googlesheets4::range_write(ss = sheetid, sheet = sheetname,
@@ -384,11 +442,22 @@ QuestUpdate <- function(week_choice){
 
 ## For multiple rounds --------------------------------------------------------
 # Update Quest sheet for multiple rounds
-round_range <- c(1:3)
+round_range <- c(18:25)
 for (r in seq(1:length(round_range))) {
   QuestUpdate(week_choice = round_range[[r]])
   Sys.sleep(5)
 }
 
+# pairings that caused an error, so I've skipped those rounds entirely
+# Need to go back later and investigate...and re-run for the whole round
+# So far, these have all been pairings with entered match scores of 2.5-2.
+# rd 10 mvl-isav | script says 2-2 after rapid, but raises error after it can't find
+#                  any tiebreak games. in reality, IsaVulpes forfeited after the rapid games,
+#                  which explains the match result of 2.5-2.
+# rd 17: Qudit-IsaVulpes
+# rd 25: jwwells42-Shnippy
+
+# So far, has been run for weeks 1-25,
+# but weeks 10, 17 and 25 need to be re-run
 
 
