@@ -50,6 +50,13 @@ quest_sheetid <- "1Y_jYuHJUnDqfYMpO3YIainspTJa7o3hgd6smeiHfe20"
 quest_sheetname <- "Raw Data"
 
 
+## Lichess API token ----------------------------------------------------------
+root <- read.delim2(paste0("C:/Users/rahul/Documents/Github/serieswatcher/path_root.txt"),
+                    header = F)[1,1]
+token <- read.delim2(paste0(root, "api_token.txt"),
+                     header = F)[1,1]
+
+
 
 # Packages and functions ======================================================
 
@@ -88,7 +95,7 @@ cli::cli_alert_info("Starting all league updates: {Sys.time()}")
 ## Update Series --------------------------------------------------------------
 
 # Source SeriesUpdate function
-source(glue::glue("{here::here()}/series_watcher.R"))
+source(paste0(root, "series_watcher.R"))
 
 # If Series is active, check/update the relevant season spreadsheet
 if(series_active) {
@@ -110,7 +117,7 @@ if(series_active) {
 if(rb_active){
   if(series_active){Sys.sleep(60)}
   cli::cli_alert_info("Rapid Battle update started: {Sys.time()}")
-  source(glue::glue("{here::here()}/rapid_battle_watcher.R"))
+  source(paste0(root, "rapid_battle_watcher.R"))
   cli::cli_alert_success("Rapid Battle update completed: {Sys.time()}")
 }
 
@@ -120,7 +127,7 @@ if(rb_active){
 if(quest_active){
   if(rb_active){Sys.sleep(60)} else if(series_active){Sys.sleep(60)}
   cli::cli_alert_info("Infinite Quest update started: {Sys.time()}")
-  source(glue::glue("{here::here()}/quest_watcher.R"))
+  source(paste0(root, "quest_watcher.R"))
   cli::cli_alert_success("Infinite Quest update completed: {Sys.time()}")
 }
 
@@ -132,7 +139,8 @@ cli::cli_rule()
 
 
 # # Automate using Windows Task Scheduler =====================================
-# # Should be run in the console
+# Not run (but would need to be run in the console anyway)
+# Set to run every 6 hours
 # taskscheduleR::taskscheduler_create(taskname = "check_community_leagues",
 #                                     rscript = glue::glue("{here::here()}/update_all_leagues.R"),
 #                                     schedule = "HOURLY",

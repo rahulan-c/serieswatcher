@@ -5,6 +5,9 @@
 
 update_series.log
 rapid_battle_watcher.log
+update_all_leagues.log
+
 api_token.txt
+path_root.txt
 
 tests/**
