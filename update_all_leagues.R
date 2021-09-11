@@ -7,9 +7,9 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- FALSE
+series_active <- TRUE
 rb_active <- TRUE
-quest_active <- FALSE
+quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
@@ -88,9 +88,7 @@ cli::cli_alert_info("Starting all league updates: {Sys.time()}")
 ## Update Series --------------------------------------------------------------
 
 # Source SeriesUpdate function
-# source("C:/Users/rahul/Documents/Github/serieswatcher/series_watcher.R")
 source(glue::glue("{here::here()}/series_watcher.R"))
-
 
 # If Series is active, check/update the relevant season spreadsheet
 if(series_active) {
