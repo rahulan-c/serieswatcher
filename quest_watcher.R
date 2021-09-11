@@ -442,27 +442,15 @@ QuestUpdate <- function(week_choice){
 
 ## For multiple rounds --------------------------------------------------------
 # Update Quest sheet for multiple rounds
-<<<<<<< HEAD
+
 round_range <- c(2)
-=======
+
 round_range <- c(18:25)
 >>>>>>> e422c951287d49a3ca9dee01bafc370932af9cc3
 for (r in seq(1:length(round_range))) {
   QuestUpdate(week_choice = round_range[[r]])
   Sys.sleep(5)
 }
-
-# pairings that caused an error, so I've skipped those rounds entirely
-# Need to go back later and investigate...and re-run for the whole round
-# So far, these have all been pairings with entered match scores of 2.5-2.
-# rd 10 mvl-isav | script says 2-2 after rapid, but raises error after it can't find
-#                  any tiebreak games. in reality, IsaVulpes forfeited after the rapid games,
-#                  which explains the match result of 2.5-2.
-# rd 17: Qudit-IsaVulpes
-# rd 25: jwwells42-Shnippy
-
-# So far, has been run for weeks 1-25,
-# but weeks 10, 17 and 25 need to be re-run
 
 
 
