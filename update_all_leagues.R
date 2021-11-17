@@ -1,6 +1,6 @@
 # UPDATE ALL ACTIVE COMMUNITY LEAGUES
 
-# Last updated: 2021-09-11
+# Last updated: 2021-11-17
 
 # Sequentially checks for games played in Series, Rapid Battle and Quest before
 # updating each league's current Google spreadsheet with relevant game/match
@@ -15,7 +15,7 @@
 # /quest_watcher.R
 
 # TODO
-# - extend Rapid Battle script to cover the knockout phase too
+# - extend Rapid Battle script to cover the knockout phase
 
 
 # Define active leagues / settings ============================================
@@ -27,33 +27,33 @@ quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2021-08-09"
-series_season_end <- "2021-11-01"
-series_sheetid <- "1VCA6XIJikVlakblodyfqXcy3rf7UkLPGJ5jlpi6CZ0E"
+series_season_start <- "2021-11-15"
+series_season_end <- "2022-01-30"
+series_sheetid <- "1WjKzwzWBElLlMimHdLO1tsbk9dxhXuCk_kD96OoBHpQ"
 series_sheetname <- "API"
-series_pair_ranges <- c("B2:E45", "G2:J45", "L2:O45", "Q2:T45",
-                        "V2:Y45", "AA2:AD45", "AF2:AI45")
+series_pair_ranges <- c("B2:E37", "G2:J37", "L2:O37", "Q2:T37",
+                        "V2:Y37", "AA2:AD37", "AF2:AI37")
 
 ## Rapid Battle settings ------------------------------------------------------
 rb_stage <- "group" # "group", "knockout"
-rb_sheetid <- "1N2ixyY6r_COHhBoFrmAzBaMu3taTlEQFIEhC6wJhgSI"
-rb_group_sheetnames <- c("Section A Group Stage", "Section B Group Stage")
+rb_sheetid <- "1y2cQTKyMN01nLCRDXbv7Rq8LZ1c-xvarO335ruhuYpE"
+rb_group_sheetnames <- c("Div A Group", "Div B Group")
 rb_knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
-rb_group_start_date <- "2021-08-10"
-rb_group_end_date <- "2021-09-20"
+rb_group_start_date <- "2021-11-10"
+rb_group_end_date <- "2021-12-28"
 rb_knockout_start_date <- "2021-06-15"
 rb_knockout_end_date <- ""
 rb_group_pair_ranges <- list(
   # Div A
-  list(c("A12:A53", "D12:G53"),
-       c("J12:J53", "M12:P53"),
-       c("A65:A106", "D65:G106"),
-       c("J65:J106", "M65:P106")),
+  list(c("A10:A29", "D10:G29"),
+       c("J10:J29", "M10:P29"),
+       c("A39:A58", "D39:G58"),
+       c("J39:J69", "M39:P69")),
   # Div B
-  list(c("A12:A53", "D12:G53"),
-       c("J12:J53", "M12:P53"),
-       c("A65:A106", "D65:G106"),
-       c("J65:J106", "M65:P106"))
+  list(c("A10:A29", "D10:G29"),
+       c("J10:J29", "M10:P29"),
+       c("A39:A58", "D39:G58"),
+       c("J39:J58", "M39:P58"))
 )
 
 rb_knockout_pair_ranges <- list()
