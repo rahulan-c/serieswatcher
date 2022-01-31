@@ -1,7 +1,5 @@
 # UPDATE ALL ACTIVE COMMUNITY LEAGUES
 
-# Last updated: 2021-11-17
-
 # Sequentially checks for games played in Series, Rapid Battle and Quest before
 # updating each league's current Google spreadsheet with relevant game/match
 # data, including game URLs and results. For Series, when a recently played game
@@ -21,8 +19,8 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- TRUE
-rb_active <- TRUE
+series_active <- FALSE
+rb_active <- FALSE
 quest_active <- TRUE
 
 
@@ -48,7 +46,7 @@ rb_group_pair_ranges <- list(
   list(c("A10:A29", "D10:G29"),
        c("J10:J29", "M10:P29"),
        c("A39:A58", "D39:G58"),
-       c("J39:J69", "M39:P69")),
+       c("J40:J69", "M40:P69")),
   # Div B
   list(c("A10:A29", "D10:G29"),
        c("J10:J29", "M10:P29"),
