@@ -19,15 +19,15 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- FALSE
+series_active <- TRUE
 rb_active <- FALSE
 quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2021-11-15"
-series_season_end <- "2022-01-30"
-series_sheetid <- "1WjKzwzWBElLlMimHdLO1tsbk9dxhXuCk_kD96OoBHpQ"
+series_season_start <- "2022-03-07"
+series_season_end <- "2022-05-22"
+series_sheetid <- "1L7iv2qTZNLfiDN4jMq2XVIB9_pTn1NTSsYeibzvSyFM"
 series_sheetname <- "API"
 series_pair_ranges <- c("B2:E37", "G2:J37", "L2:O37", "Q2:T37",
                         "V2:Y37", "AA2:AD37", "AF2:AI37")
