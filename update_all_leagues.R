@@ -25,12 +25,12 @@ quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2022-03-07"
-series_season_end <- "2022-05-22"
-series_sheetid <- "1L7iv2qTZNLfiDN4jMq2XVIB9_pTn1NTSsYeibzvSyFM"
+series_season_start <- "2022-06-06"
+series_season_end <- "2022-08-21"
+series_sheetid <- "1maRWZTg-0XeswPkym8lwoIEZi3o0yD2wT7izQa6A0o8"
 series_sheetname <- "API"
-series_pair_ranges <- c("B2:E37", "G2:J37", "L2:O37", "Q2:T37",
-                        "V2:Y37", "AA2:AD37", "AF2:AI37")
+series_pair_ranges <- c("B2:E33", "G2:J33", "L2:O33", "Q2:T33",
+                        "V2:Y33", "AA2:AD33", "AF2:AI33")
 
 ## Rapid Battle settings ------------------------------------------------------
 rb_stage <- "group" # "group", "knockout"
