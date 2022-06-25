@@ -59,7 +59,7 @@ rb_knockout_pair_ranges <- list()
 
 ## Infinite Quest settings ----------------------------------------------------
 quest_sheetid <- "1Y_jYuHJUnDqfYMpO3YIainspTJa7o3hgd6smeiHfe20"
-quest_sheetname <- "Raw Data"
+quest_sheetname <- "Results"
 
 
 ## Lichess API token ----------------------------------------------------------
