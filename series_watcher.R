@@ -221,6 +221,9 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
   unplayed <- all_pairs %>% filter(str_detect(status, "none")) %>% nrow()
   found <- all_pairs %>% filter(status == "found") %>% nrow()
 
+  cli::cli_inform("")
+  cli::cli_inform("--- SERIES SUMMARY ---")
+
   cli::cli_dl(c(
     "Total pairings" = total - invalid,
     "Previously recorded" = old,
@@ -228,4 +231,5 @@ SeriesUpdate <- function(season_sheetkey,         # Key/ID of Series Google Shee
     "Unplayed" = unplayed
   )
   )
+  cli::cli_inform("")
 }

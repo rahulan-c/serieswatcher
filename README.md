@@ -1,15 +1,15 @@
 # sheetle
 
-Checks for games played in Lichess4545 community leagues and updates each league's current pairings with the URLs and results of recently completed games. Also can notify players that their games have been recorded.
+Scripts that support various [Lichess4545](https://www.lichess4545.com/) community leagues by updating league spreadsheets with the latest results. The Series script also notifies players that their game has been picked up.
 
-Currently automated to run every six hours for Series, Rapid Battle (group stage only) and Infinite Quest. 
+Currently runs every six hours for Series, Rapid Battle (group stage) and Infinite Quest on my local machine.
 
 Check out the Lichess4545 [overview](https://bit.ly/35w1xqH) to learn more about these leagues. 
 
 ## Requirements
 
-- Read/write access to each league's current spreadsheet (Google Sheets)
-- [Series only] A Lichess API token with msg:write permissions: https://lichess.org/account/oauth/token
+- Read/write access to each league's current Google Sheets spreadsheet
+- [Series] A Lichess API token with msg:write permissions (see https://lichess.org/account/oauth/token)
 
 ## Acknowledgements
 

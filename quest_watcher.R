@@ -100,15 +100,15 @@ QuestUpdate <- function(week_choice){
 
   for (m in seq(1:nrow(round_pairs))) {
 
-    cli::cli_inform("{m}/{nrow(round_pairs)} {round_pairs$p1[m]}-{round_pairs$p2[m]}")
+    # cli::cli_inform("{m}/{nrow(round_pairs)} {round_pairs$p1[m]}-{round_pairs$p2[m]}")
 
     # Ignore if the match has already been completed, or if the match score in
     # the Quest sheet is listed as 3-3
     if (round_pairs$match_completed[m] %in% c("y", "arma")) {
-      cli::cli_alert_info("Completed and previously recorded in sheet.")
+      # cli::cli_alert_info("Completed and previously recorded in sheet.")
       next
     } else if (round_pairs$result_computed[m] %in% c("3-3")) {
-      cli::cli_alert_info("Completed and previously recorded in sheet.")
+      # cli::cli_alert_info("Completed and previously recorded in sheet.")
       next
     }
 
@@ -145,7 +145,7 @@ QuestUpdate <- function(week_choice){
     # If no games found, try switching the players around in the Lichess games
     # search query. If still no luck, move to the next pairing
     if(res == ""){
-      cli::cli_inform("No games found. Trying a reversed search")
+      # cli::cli_inform("No games found. Trying a reversed search")
 
       query2 <- httr::GET(
         url = "https://lichess.org",
@@ -173,7 +173,7 @@ QuestUpdate <- function(week_choice){
                                      encoding = stringi::stri_enc_detect(httr::content(
                                        query2, "raw"))[[1]][1, 1])
       if(res2 == ""){
-        cli::cli_inform("No games found in either player's history.")
+        # cli::cli_inform("No games found in either player's history.")
         next
       } else {
         res <- res2
@@ -192,13 +192,13 @@ QuestUpdate <- function(week_choice){
 
     # If no suitable rapid games are returned
     if(nrow(res) == 0) {
-      cli::cli_inform("No suitable rapid games found")
+      # cli::cli_inform("No suitable rapid games found")
       next
     }
 
     # If more than 4 suitable rapid games are found
     if (nrow(res) > 4) {
-      cli::cli_inform("Too many suitable games played (!)")
+      # cli::cli_inform("Too many suitable games played (!)")
       next
     }
 
@@ -283,7 +283,7 @@ QuestUpdate <- function(week_choice){
     numgames <- nrow(match_data)
     p1score <- sum(match_data$p1_pts, na.rm = T)
     p2score <- sum(match_data$p2_pts, na.rm = T)
-    cli::cli_alert_info("{p1score}-{p2score} after rapid")
+    # cli::cli_alert_info("{p1score}-{p2score} after rapid")
     round_pairs$result_computed[m] <- glue::glue("{p1score}-{p2score}")
 
     # If a winner can be identified, record the match as completed
@@ -295,7 +295,7 @@ QuestUpdate <- function(week_choice){
     # Tied matches
     if((p1score == 2) & (p2score == 2)) {
 
-      cli::cli_inform("Match tied after rapid games. Looking for tiebreaks.")
+      # cli::cli_inform("Match tied after rapid games. Looking for tiebreaks.")
 
       # Query Lichess API to find tiebreak games between when the last
       #   rapid game ended and the end of the round
@@ -329,7 +329,7 @@ QuestUpdate <- function(week_choice){
 
       if(res_tb == "") {
 
-        cli::cli_alert_warning("No possible tiebreak games found. Will try searching with the players reversed.")
+        # cli::cli_alert_warning("No possible tiebreak games found. Will try searching with the players reversed.")
         query2 <- httr::GET(
           url = "https://lichess.org",
           path = paste0("/api/games/user/", round_pairs$p2[m]),
@@ -356,7 +356,7 @@ QuestUpdate <- function(week_choice){
                                          encoding = stringi::stri_enc_detect(httr::content(
                                            query2, "raw"))[[1]][1, 1])
         if(res2 == ""){
-          cli::cli_inform("No possible tiebreak games found in either player's history.")
+          # cli::cli_inform("No possible tiebreak games found in either player's history.")
           next
         } else {
           res_tb <- res2
@@ -370,12 +370,12 @@ QuestUpdate <- function(week_choice){
                  clock.increment == increment_tiebreak) %>%
         arrange(createdAt)
 
-      cli::cli_inform("Found {nrow(res_tb)} possible tiebreak games: {res_tb$id}")
+      # cli::cli_inform("Found {nrow(res_tb)} possible tiebreak games: {res_tb$id}")
 
       # If there are no suitable blitz games identified (or if there are more
       # than 2), abandon the search
       if ((nrow(res_tb) == 0) || (nrow(res_tb) > 2)) {
-        cli::cli_alert_warning("Zero or 3+ candidate tiebreak games identified, can't proceed")
+        # cli::cli_alert_warning("Zero or 3+ candidate tiebreak games identified, can't proceed")
         next
       }
 
@@ -437,7 +437,7 @@ QuestUpdate <- function(week_choice){
       # Report match score after identified blitz tiebreaks
       p1score <- p1score + sum(tb_data$p1_pts, na.rm = T)
       p2score <- p2score + sum(tb_data$p2_pts, na.rm = T)
-      cli::cli_alert_info("{p1score}-{p2score} after rapid + blitz")
+      # cli::cli_alert_info("{p1score}-{p2score} after rapid + blitz")
       round_pairs$result_computed[m] <- glue::glue("{p1score}-{p2score}")
 
       # If a clear winner can be identified, record the match as completed and
@@ -456,7 +456,7 @@ QuestUpdate <- function(week_choice){
     }
 
     # Report one-line summary per pairing
-    cli::cli_alert_info("{m}/{nrow(round_pairs)} {round_pairs$p1[m]}-{round_pairs$p2[m]}")
+    # cli::cli_alert_info("{m}/{nrow(round_pairs)} {round_pairs$p1[m]}-{round_pairs$p2[m]}")
 
   } # end pairing loop
 
@@ -470,7 +470,7 @@ QuestUpdate <- function(week_choice){
                              data = tibble(round_pairs[,7:ncol(round_pairs)]),
                              col_names = F, reformat = T)
 
-  cli::cli_alert_success("Updated Quest sheet with pairing details!")
+  cli::cli_alert_success("Updated Quest sheet")
 
   newly_completed <- round_pairs %>%
     filter(match_completed == "y") %>%
@@ -481,6 +481,9 @@ QuestUpdate <- function(week_choice){
     filter(is.na(res_rapid1)) %>%
     nrow()
 
+  cli::cli_inform("")
+  cli::cli_inform("--- QUEST SUMMARY ---")
+
   # Summarise update outcomes
   cli::cli_dl(c(
     "Current Quest round" = round_pairs$round[1],
@@ -490,6 +493,7 @@ QuestUpdate <- function(week_choice){
     "Unplayed" = unplayed
   )
   )
+  cli::cli_inform("")
 
 } # end function
 

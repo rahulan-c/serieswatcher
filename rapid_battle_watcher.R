@@ -136,7 +136,7 @@ FindGroupGame <- function(white, black,
 
 # Update group games ----------------------------------------------------------
 if(current_phase == "group") {
-# cli::cli_h2("Updating group games")
+cli::cli_h2("Updating group games")
 
 # Extract group players and pairings by looping over all divisions, groups,
 # and colour lists
@@ -179,7 +179,7 @@ for (d in seq(1:length(pair_ranges))) {
 
     # Now see if each pairing has been played or not...
     # And if not, search for games...
-    # cli::cli_inform("Checking group pairings...")
+    cli::cli_inform("Checking group pairings...")
     for (p in seq(1:nrow(col_list[[3]]))) {
 
       # cli::cli_inform("{p}/{nrow(col_list[[3]])} {col_list[[3]]$white[p]}-{col_list[[3]]$black[p]}")
@@ -235,7 +235,7 @@ for (d in seq(1:length(pair_ranges))) {
       reformat = T
     )
     Sys.sleep(1)
-    # cli::cli_alert_success("Updated group game details in sheet")
+    cli::cli_alert_success("Updated group game details in sheet")
 
     # Add to the list of group data
     group_list[[g]] <- col_list
@@ -244,7 +244,7 @@ for (d in seq(1:length(pair_ranges))) {
   # Add to the list of division data
   div_list[[d]] <- group_list
 }
-# cli::cli_alert_success("Group phase data checked!")
+cli::cli_alert_success("Group phase data checked!")
 
 }
 

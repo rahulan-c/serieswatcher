@@ -5,7 +5,7 @@
 # data, including game URLs and results. For Series, when a recently played game
 # is identified, it also sends a direct message on Lichess to both players,
 # notifying them that their game has been picked up and recorded. The messages
-# are sent from https://lichess.org/@/sheetle.
+# are sent from https://lichess.org/@/sheetle2.
 
 # Calls a separate update script for each league:
 # /series_watcher.R
@@ -19,39 +19,39 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- FALSE
-rb_active <- FALSE
+series_active <- TRUE
+rb_active <- TRUE
 quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2022-06-06"
-series_season_end <- "2022-08-21"
-series_sheetid <- "1maRWZTg-0XeswPkym8lwoIEZi3o0yD2wT7izQa6A0o8"
+series_season_start <- "2022-09-05"
+series_season_end <- "2022-11-21"
+series_sheetid <- "1-uxJjvqf8hOqASZphWTUx0KNOvO50StwTWNXxFfYj9Q"
 series_sheetname <- "API"
-series_pair_ranges <- c("B2:E33", "G2:J33", "L2:O33", "Q2:T33",
-                        "V2:Y33", "AA2:AD33", "AF2:AI33")
+series_pair_ranges <- c("B2:E29", "G2:J29", "L2:O29", "Q2:T29",
+                        "V2:Y29", "AA2:AD29", "AF2:AI29")
 
 ## Rapid Battle settings ------------------------------------------------------
 rb_stage <- "group" # "group", "knockout"
-rb_sheetid <- "1y2cQTKyMN01nLCRDXbv7Rq8LZ1c-xvarO335ruhuYpE"
+rb_sheetid <- "1UsO4lIhJz2ml0JdKXjnB5pBtLKnyDqsmrwPgijsDsAY"
 rb_group_sheetnames <- c("Div A Group", "Div B Group")
 rb_knockout_sheetnames <- c("Div A Playoffs", "Div B Playoffs")
-rb_group_start_date <- "2021-11-10"
-rb_group_end_date <- "2021-12-28"
-rb_knockout_start_date <- "2021-06-15"
+rb_group_start_date <- "2022-09-05"
+rb_group_end_date <- "2022-10-23"
+rb_knockout_start_date <- "2022-10-24"
 rb_knockout_end_date <- ""
 rb_group_pair_ranges <- list(
   # Div A
-  list(c("A10:A29", "D10:G29"),
-       c("J10:J29", "M10:P29"),
-       c("A39:A58", "D39:G58"),
-       c("J40:J69", "M40:P69")),
+  list(c("A11:A40", "D11:G40"),
+       c("J11:J40", "M11:P40"),
+       c("A51:A80", "D51:G80"),
+       c("J51:J80", "M51:P80")),
   # Div B
-  list(c("A10:A29", "D10:G29"),
-       c("J10:J29", "M10:P29"),
-       c("A39:A58", "D39:G58"),
-       c("J39:J58", "M39:P58"))
+  list(c("A11:A22", "D11:G22"),
+       c("J11:J22", "M11:P22"),
+       c("A33:A44", "D33:G44"),
+       c("J33:J44", "M33:P44"))
 )
 
 rb_knockout_pair_ranges <- list()
@@ -150,9 +150,11 @@ cli::cli_alert_info("Completed all league updates in {prettyunits::pretty_sec(ru
 cli::cli_rule()
 
 
-# # Automate using Windows Task Scheduler =====================================
-# Would need to be run in the console anyway
-# Creates a task that runs this script every 6 hours
+# ==== Run script every 6 hours using Windows Task Scheduler ==================
+#
+# Uses the {taskscheduleR} package
+# Run this snippet in the Rstudio console
+#
 # taskscheduleR::taskscheduler_create(taskname = "check_community_leagues",
 #                                     rscript = glue::glue("{here::here()}/update_all_leagues.R"),
 #                                     schedule = "HOURLY",
