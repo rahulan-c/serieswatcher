@@ -20,7 +20,7 @@
 
 ## Active leagues -------------------------------------------------------------
 series_active <- TRUE
-rb_active <- TRUE
+rb_active <- FALSE
 quest_active <- TRUE
 
 
