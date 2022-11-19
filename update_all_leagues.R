@@ -19,7 +19,7 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- TRUE
+series_active <- FALSE
 rb_active <- FALSE
 quest_active <- TRUE
 
