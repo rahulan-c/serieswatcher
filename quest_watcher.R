@@ -518,6 +518,10 @@ QuestUpdate <- function(week_choice){
 ## Update Quest results for the latest week/round -----------------------------
 QuestUpdate(week_choice = "latest")
 
+# Update Quest results for a specific week number
+# QuestUpdate(week_choice = 91)
+
+
 # week_choice: either numeric (week_choice = 43)
 #              or "latest" (checks the highest round number listed in the "Results" sheet)
 
