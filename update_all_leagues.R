@@ -19,19 +19,19 @@
 # Define active leagues / settings ============================================
 
 ## Active leagues -------------------------------------------------------------
-series_active <- FALSE
+series_active <- TRUE
 rb_active <- FALSE
 
 quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2022-09-05"
-series_season_end <- "2022-11-21"
-series_sheetid <- "1-uxJjvqf8hOqASZphWTUx0KNOvO50StwTWNXxFfYj9Q"
+series_season_start <- "2022-12-05"
+series_season_end <- "2023-02-19"
+series_sheetid <- "1tJc10qM9FRIwZ4ygJpQwOEUzf4oKAZ-ZpNy8zfBDrqU"
 series_sheetname <- "API"
-series_pair_ranges <- c("B2:E29", "G2:J29", "L2:O29", "Q2:T29",
-                        "V2:Y29", "AA2:AD29", "AF2:AI29")
+series_pair_ranges <- c("B2:E25", "G2:J25", "L2:O25", "Q2:T25",
+                        "V2:Y25", "AA2:AD25", "AF2:AI25")
 
 ## Rapid Battle settings ------------------------------------------------------
 rb_stage <- "group" # "group", "knockout"
