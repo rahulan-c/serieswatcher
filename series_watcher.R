@@ -22,12 +22,12 @@ send_message <- function(p1, p2, game_id, token) {
 
   # Define message text
   message <- sprintf(
-    "%s Series game logged %s
+    "Series game logged
 
     FYI your 90+30 game with @%s has just been added to the Series spreadsheet. If this was a mistake, please contact the Series mods. If it's correct, you don't need to do anything.
 
     %s",
-    emo::ji("abacus"), emo::ji("beetle"), p2, paste0("https://lichess.org/", game_id)
+    p2, paste0("https://lichess.org/", game_id)
   )
 
   # Send message using Lichess API
