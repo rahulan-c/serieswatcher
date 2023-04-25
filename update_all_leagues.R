@@ -151,7 +151,7 @@ cli::cli_alert_info("Completed all league updates in {prettyunits::pretty_sec(ru
 cli::cli_rule()
 
 
-# ==== Run script every 6 hours using Windows Task Scheduler ==================
+# ==== Run script every 12 hours using Windows Task Scheduler ==================
 #
 # Uses the {taskscheduleR} package
 # Run this snippet in the Rstudio console
@@ -160,7 +160,7 @@ cli::cli_rule()
 #                                     rscript = glue::glue("{here::here()}/update_all_leagues.R"),
 #                                     schedule = "HOURLY",
 #                                     starttime = "17:00",
-#                                     modifier = 6)
+#                                     modifier = 12)
 
 
 
