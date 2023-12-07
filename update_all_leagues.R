@@ -12,9 +12,6 @@
 # /rapid_battle_watcher.R
 # /quest_watcher.R
 
-# TODO (someday)
-# - extend Rapid Battle script to cover the knockout phase
-
 
 # Define active leagues / settings ============================================
 
@@ -25,12 +22,12 @@ quest_active <- TRUE
 
 
 ## Series settings ------------------------------------------------------------
-series_season_start <- "2023-02-28"
-series_season_end <- "2023-05-14"
-series_sheetid <- "1-xyrEIkvKf7U5zl5EBB98eI7T_Ha-amNfBWIMWNWsI4"
+series_season_start <- "2023-12-04"
+series_season_end <- "2024-02-18"
+series_sheetid <- "1Az2LSh3HdnyS_jyicFoKyEIYQ3zS1NDmNQ-MT_0XfXc"
 series_sheetname <- "API"
-series_pair_ranges <- c("B2:E29", "G2:J29", "L2:O29", "Q2:T29",
-                        "V2:Y29", "AA2:AD29", "AF2:AI29")
+series_pair_ranges <- c("B2:E37", "G2:J37", "L2:O37", "Q2:T37",
+                        "V2:Y37", "AA2:AD37", "AF2:AI37")
 
 ## Rapid Battle settings ------------------------------------------------------
 rb_stage <- "group" # "group", "knockout"
@@ -151,10 +148,12 @@ cli::cli_alert_info("Completed all league updates in {prettyunits::pretty_sec(ru
 cli::cli_rule()
 
 
-# ==== Run script every 12 hours using Windows Task Scheduler ==================
+# ==== Schedule the script to run locally using Windows Task Scheduler ========
+# NOTE: The snippet below needs to be run within the RStudio console
+#       It uses the {taskscheduleR} package
 #
-# Uses the {taskscheduleR} package
-# Run this snippet in the Rstudio console
+# As of 2023-12-07, the script is scheduled to run locally at 09:00 and 21:00 UTC
+# every day.
 #
 # taskscheduleR::taskscheduler_create(taskname = "check_community_leagues",
 #                                     rscript = glue::glue("{here::here()}/update_all_leagues.R"),
